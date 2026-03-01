@@ -149,7 +149,10 @@ pub(crate) fn start<I: Stream>(
 
     // The debug version of `slice` might be wider, either due to rendering one byte as two nibbles or
     // escaping in strings.
-    let mut debug_slice = format!("{:?}", crate::util::from_fn(|f| input.trace(f)));
+    let mut debug_slice = format!(
+        "{:?}",
+        crate::util::from_fn(|f| input.trace_with_size_hint(f, input_width))
+    );
     let (debug_slice, eof) = if let Some(debug_offset) = debug_slice
         .char_indices()
         .enumerate()

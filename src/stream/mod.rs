@@ -11,6 +11,7 @@
 
 use core::hash::BuildHasher;
 use core::num::NonZeroUsize;
+use std::fmt::Write;
 
 use crate::ascii::Caseless as AsciiCaseless;
 use crate::error::Needed;
@@ -265,6 +266,16 @@ pub trait Stream: Offset<<Self as Stream>::Checkpoint> + core::fmt::Debug {
         #![allow(deprecated)]
         write!(f, "{:#?}", self.raw())
     }
+
+    /// Write out a single-line summary, with a hint for the maximum number of characters to print
+    /// to avoid over-work for large inputs
+    fn trace_with_size_hint(
+        &self,
+        f: &mut core::fmt::Formatter<'_>,
+        _max_chars: usize,
+    ) -> core::fmt::Result {
+        self.trace(f)
+    }
 }
 
 impl<'i, T> Stream for &'i [T]
@@ -366,6 +377,32 @@ where
 
     fn trace(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{self:?}")
+    }
+
+    fn trace_with_size_hint(
+        &self,
+        f: &mut core::fmt::Formatter<'_>,
+        max_chars: usize,
+    ) -> core::fmt::Result {
+        f.write_char('[')?;
+
+        let mut written = 1;
+        for (i, item) in self.iter().enumerate() {
+            let formatted = format!("{item:?}");
+            f.write_str(&formatted)?;
+            written += formatted.len();
+
+            if i < self.len() {
+                f.write_str(", ")?;
+                written += 2;
+            }
+
+            if written >= max_chars {
+                return Ok(());
+            }
+        }
+
+        f.write_char(']')
     }
 }
 
@@ -473,6 +510,15 @@ impl<'i> Stream for &'i str {
     #[inline(always)]
     fn raw(&self) -> &dyn core::fmt::Debug {
         self
+    }
+
+    fn trace_with_size_hint(
+        &self,
+        f: &mut core::fmt::Formatter<'_>,
+        max_chars: usize,
+    ) -> core::fmt::Result {
+        let slice = &self[..max_chars.min(self.len())];
+        write!(f, "{slice:?}")
     }
 }
 
