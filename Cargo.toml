@@ -122,11 +122,12 @@ pre-release-replacements = [
 ]
 
 [features]
-default = ["std"]
+# default = ["std"]
+default = ["std", "debug"]
 alloc = []
 std = ["alloc", "memchr?/std"]
 simd = ["dep:memchr"]
-debug = ["std", "dep:anstream", "dep:anstyle", "dep:is_terminal_polyfill", "dep:terminal_size"]
+debug = ["std", "dep:anstream", "dep:anstyle", "dep:is_terminal_polyfill", "dep:terminal_size", "dep:lazy_static"]
 unstable-recover = []
 
 unstable-doc = ["alloc", "std", "simd", "unstable-recover"]
@@ -137,6 +138,7 @@ anstyle = { version = "1.0.8", optional = true }
 is_terminal_polyfill = { version = "1.48.1", optional = true }
 memchr = { version = "2.7", optional = true, default-features = false }
 terminal_size = { version = "0.4.3", optional = true }
+lazy_static = { version = "1.5", optional = true }
 
 [dev-dependencies]
 proptest = "1.6.0"
@@ -154,6 +156,11 @@ anyhow = "1.0.100"
 debug = true
 lto = true
 codegen-units = 1
+
+
+[[example]]
+name = "big_input"
+required-features = ["debug", "std"]
 
 [[example]]
 name = "arithmetic"

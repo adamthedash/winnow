@@ -1443,6 +1443,7 @@ dependencies = [
  "circular",
  "criterion",
  "is_terminal_polyfill",
+ "lazy_static",
  "lexopt",
  "memchr",
  "proptest",

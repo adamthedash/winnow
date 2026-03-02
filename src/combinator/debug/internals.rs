@@ -2,6 +2,7 @@
 
 use std::io::Write;
 
+use super::register::FILTERS;
 use crate::error::ParserError;
 use crate::stream::Stream;
 use crate::*;
@@ -50,18 +51,24 @@ where
 {
     #[inline]
     fn parse_next(&mut self, i: &mut I) -> Result<O, E> {
-        let depth = Depth::new();
-        let original = i.checkpoint();
-        start(*depth, &self.name, self.call_count, i);
+        let enabled = FILTERS.enabled(&self.name);
 
-        let res = self.parser.parse_next(i);
+        if enabled {
+            let depth = Depth::new();
+            let original = i.checkpoint();
+            start(*depth, &self.name, self.call_count, i);
 
-        let consumed = i.offset_from(&original);
-        let severity = Severity::with_result(&res);
-        end(*depth, &self.name, self.call_count, consumed, severity);
-        self.call_count += 1;
+            let res = self.parser.parse_next(i);
 
-        res
+            let consumed = i.offset_from(&original);
+            let severity = Severity::with_result(&res);
+            end(*depth, &self.name, self.call_count, consumed, severity);
+            self.call_count += 1;
+
+            res
+        } else {
+            self.parser.parse_next(i)
+        }
     }
 }
 

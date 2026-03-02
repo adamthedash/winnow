@@ -1,5 +1,6 @@
 mod dispatch;
 mod seq;
+mod trace_name;
 
 #[cfg(test)]
 macro_rules! assert_parse(

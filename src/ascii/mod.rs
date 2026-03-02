@@ -5,6 +5,7 @@
 #[cfg(test)]
 mod tests;
 
+use crate::trace_name;
 use core::ops::{Add, Shl};
 
 use crate::combinator::alt;
@@ -100,7 +101,7 @@ where
     Input: StreamIsPartial + Stream + Compare<&'static str>,
     Error: ParserError<Input>,
 {
-    trace("crlf", "\r\n").parse_next(input)
+    trace(trace_name!("crlf"), "\r\n").parse_next(input)
 }
 
 /// Recognizes a string of 0+ characters until `"\r\n"`, `"\n"`, or eof.
@@ -155,7 +156,7 @@ where
     <Input as Stream>::Token: AsChar + Clone,
     Error: ParserError<Input>,
 {
-    trace("till_line_ending", move |input: &mut Input| {
+    trace(trace_name!("till_line_ending"), move |input: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() {
             till_line_ending_::<_, _, true>(input)
         } else {
@@ -246,7 +247,7 @@ where
     Input: StreamIsPartial + Stream + Compare<&'static str>,
     Error: ParserError<Input>,
 {
-    trace("line_ending", alt(("\n", "\r\n"))).parse_next(input)
+    trace(trace_name!("line_ending"), alt(("\n", "\r\n"))).parse_next(input)
 }
 
 /// Matches a newline character `'\n'`.
@@ -296,7 +297,7 @@ where
     I: Stream,
     I: Compare<char>,
 {
-    trace("newline", '\n').parse_next(input)
+    trace(trace_name!("newline"), '\n').parse_next(input)
 }
 
 /// Matches a tab character `'\t'`.
@@ -345,7 +346,7 @@ where
     Input: StreamIsPartial + Stream + Compare<char>,
     Error: ParserError<Input>,
 {
-    trace("tab", '\t').parse_next(input)
+    trace(trace_name!("tab"), '\t').parse_next(input)
 }
 
 /// Recognizes zero or more lowercase and uppercase ASCII alphabetic characters: `'a'..='z'`, `'A'..='Z'`
@@ -397,7 +398,7 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("alpha0", take_while(0.., AsChar::is_alpha)).parse_next(input)
+    trace(trace_name!("alpha0"), take_while(0.., AsChar::is_alpha)).parse_next(input)
 }
 
 /// Recognizes one or more lowercase and uppercase ASCII alphabetic characters: `'a'..='z'`, `'A'..='Z'`
@@ -449,7 +450,7 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("alpha1", take_while(1.., AsChar::is_alpha)).parse_next(input)
+    trace(trace_name!("alpha1"), take_while(1.., AsChar::is_alpha)).parse_next(input)
 }
 
 /// Recognizes zero or more ASCII numerical characters: `'0'..='9'`
@@ -502,7 +503,7 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("digit0", take_while(0.., AsChar::is_dec_digit)).parse_next(input)
+    trace(trace_name!("digit0"), take_while(0.., AsChar::is_dec_digit)).parse_next(input)
 }
 
 /// Recognizes one or more ASCII numerical characters: `'0'..='9'`
@@ -570,7 +571,7 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("digit1", take_while(1.., AsChar::is_dec_digit)).parse_next(input)
+    trace(trace_name!("digit1"), take_while(1.., AsChar::is_dec_digit)).parse_next(input)
 }
 
 /// Recognizes zero or more ASCII hexadecimal numerical characters: `'0'..='9'`, `'A'..='F'`,
@@ -622,7 +623,11 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("hex_digit0", take_while(0.., AsChar::is_hex_digit)).parse_next(input)
+    trace(
+        trace_name!("hex_digit0"),
+        take_while(0.., AsChar::is_hex_digit),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes one or more ASCII hexadecimal numerical characters: `'0'..='9'`, `'A'..='F'`,
@@ -675,7 +680,11 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("hex_digit1", take_while(1.., AsChar::is_hex_digit)).parse_next(input)
+    trace(
+        trace_name!("hex_digit1"),
+        take_while(1.., AsChar::is_hex_digit),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes zero or more octal characters: `'0'..='7'`
@@ -728,7 +737,11 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("oct_digit0", take_while(0.., AsChar::is_oct_digit)).parse_next(input)
+    trace(
+        trace_name!("oct_digit0"),
+        take_while(0.., AsChar::is_oct_digit),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes one or more octal characters: `'0'..='7'`
@@ -780,7 +793,11 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("oct_digit0", take_while(1.., AsChar::is_oct_digit)).parse_next(input)
+    trace(
+        trace_name!("oct_digit0"),
+        take_while(1.., AsChar::is_oct_digit),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes zero or more ASCII numerical and alphabetic characters: `'a'..='z'`, `'A'..='Z'`, `'0'..='9'`
@@ -832,7 +849,11 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("alphanumeric0", take_while(0.., AsChar::is_alphanum)).parse_next(input)
+    trace(
+        trace_name!("alphanumeric0"),
+        take_while(0.., AsChar::is_alphanum),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes one or more ASCII numerical and alphabetic characters: `'a'..='z'`, `'A'..='Z'`, `'0'..='9'`
@@ -884,7 +905,11 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("alphanumeric1", take_while(1.., AsChar::is_alphanum)).parse_next(input)
+    trace(
+        trace_name!("alphanumeric1"),
+        take_while(1.., AsChar::is_alphanum),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes zero or more spaces and tabs.
@@ -924,7 +949,7 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("space0", take_while(0.., AsChar::is_space)).parse_next(input)
+    trace(trace_name!("space0"), take_while(0.., AsChar::is_space)).parse_next(input)
 }
 
 /// Recognizes one or more spaces and tabs.
@@ -976,7 +1001,7 @@ where
     <Input as Stream>::Token: AsChar,
     Error: ParserError<Input>,
 {
-    trace("space1", take_while(1.., AsChar::is_space)).parse_next(input)
+    trace(trace_name!("space1"), take_while(1.., AsChar::is_space)).parse_next(input)
 }
 
 /// Recognizes zero or more spaces, tabs, carriage returns and line feeds.
@@ -1028,7 +1053,11 @@ where
     <Input as Stream>::Token: AsChar + Clone,
     Error: ParserError<Input>,
 {
-    trace("multispace0", take_while(0.., (' ', '\t', '\r', '\n'))).parse_next(input)
+    trace(
+        trace_name!("multispace0"),
+        take_while(0.., (' ', '\t', '\r', '\n')),
+    )
+    .parse_next(input)
 }
 
 /// Recognizes one or more spaces, tabs, carriage returns and line feeds.
@@ -1080,7 +1109,11 @@ where
     <Input as Stream>::Token: AsChar + Clone,
     Error: ParserError<Input>,
 {
-    trace("multispace1", take_while(1.., (' ', '\t', '\r', '\n'))).parse_next(input)
+    trace(
+        trace_name!("multispace1"),
+        take_while(1.., (' ', '\t', '\r', '\n')),
+    )
+    .parse_next(input)
 }
 
 /// Decode a decimal unsigned integer (e.g. [`u32`])
@@ -1112,7 +1145,7 @@ where
     Output: Uint,
     Error: ParserError<Input>,
 {
-    trace("dec_uint", move |input: &mut Input| {
+    trace(trace_name!("dec_uint"), move |input: &mut Input| {
         alt(((one_of('1'..='9'), digit0).void(), one_of('0').void()))
             .take()
             .verify_map(|s: <Input as Stream>::Slice| {
@@ -1197,7 +1230,7 @@ where
     Output: Int,
     Error: ParserError<Input>,
 {
-    trace("dec_int", move |input: &mut Input| {
+    trace(trace_name!("dec_int"), move |input: &mut Input| {
         let sign = opt(dispatch! {any.map(AsChar::as_char);
             '+' => empty.value(true),
             '-' => empty.value(false),
@@ -1315,7 +1348,7 @@ where
     Output: HexUint,
     Error: ParserError<Input>,
 {
-    trace("hex_uint", move |input: &mut Input| {
+    trace(trace_name!("hex_uint"), move |input: &mut Input| {
         let invalid_offset = input
             .offset_for(|c| {
                 let c = c.as_char();
@@ -1470,7 +1503,7 @@ where
     <Input as Stream>::IterOffsets: Clone,
     Error: ParserError<Input>,
 {
-    trace("float", move |input: &mut Input| {
+    trace(trace_name!("float"), move |input: &mut Input| {
         let s = take_float_or_exceptions(input)?;
         s.parse_slice()
             .ok_or_else(|| ParserError::from_input(input))
@@ -1603,7 +1636,7 @@ where
     Escapable: Parser<Input, EscapableOutput, Error>,
     Error: ParserError<Input>,
 {
-    trace("take_escaped", move |input: &mut Input| {
+    trace(trace_name!("take_escaped"), move |input: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() && input.is_partial() {
             escaped_internal::<_, _, _, _, _, _, true>(
                 input,
@@ -1779,7 +1812,7 @@ where
     Output: crate::stream::Accumulate<EscapeOutput>,
     Error: ParserError<Input>,
 {
-    trace("escaped", move |input: &mut Input| {
+    trace(trace_name!("escaped"), move |input: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() && input.is_partial() {
             escaped_transform_internal::<_, _, _, _, _, _, _, true>(
                 input,

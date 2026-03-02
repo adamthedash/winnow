@@ -10,6 +10,7 @@ use crate::error::ParserError;
 use crate::stream::Range;
 use crate::stream::{Compare, CompareResult, ContainsToken, FindSlice, Stream};
 use crate::stream::{StreamIsPartial, ToUsize};
+use crate::trace_name;
 use crate::Parser;
 use crate::Result;
 use core::result::Result::Ok;
@@ -58,7 +59,7 @@ where
     Input: StreamIsPartial + Stream,
     Error: ParserError<Input>,
 {
-    trace("any", move |input: &mut Input| {
+    trace(trace_name!("any"), move |input: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() {
             any_::<_, _, true>(input)
         } else {
@@ -267,7 +268,7 @@ where
     Error: ParserError<Input>,
 {
     trace(
-        "one_of",
+        trace_name!("one_of"),
         any.verify(move |t: &<Input as Stream>::Token| set.contains_token(t.clone())),
     )
 }
@@ -320,7 +321,7 @@ where
     Error: ParserError<Input>,
 {
     trace(
-        "none_of",
+        trace_name!("none_of"),
         any.verify(move |t: &<Input as Stream>::Token| !set.contains_token(t.clone())),
     )
 }
@@ -488,7 +489,7 @@ where
         start_inclusive,
         end_inclusive,
     } = occurrences.into();
-    trace("take_while", move |i: &mut Input| {
+    trace(trace_name!("take_while"), move |i: &mut Input| {
         match (start_inclusive, end_inclusive) {
             (0, None) => {
                 if <Input as StreamIsPartial>::is_partial_supported() {
@@ -679,7 +680,7 @@ where
         start_inclusive,
         end_inclusive,
     } = occurrences.into();
-    trace("take_till", move |i: &mut Input| {
+    trace(trace_name!("take_till"), move |i: &mut Input| {
         match (start_inclusive, end_inclusive) {
             (0, None) => {
                 if <Input as StreamIsPartial>::is_partial_supported() {
@@ -787,7 +788,7 @@ where
     Error: ParserError<Input>,
 {
     let c = token_count.to_usize();
-    trace("take", move |i: &mut Input| {
+    trace(trace_name!("take"), move |i: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() {
             take_::<_, _, true>(i, c)
         } else {
@@ -919,7 +920,7 @@ where
         start_inclusive,
         end_inclusive,
     } = occurrences.into();
-    trace("take_until", move |i: &mut Input| {
+    trace(trace_name!("take_until"), move |i: &mut Input| {
         match (start_inclusive, end_inclusive) {
             (0, None) => {
                 if <Input as StreamIsPartial>::is_partial_supported() {
@@ -1049,7 +1050,10 @@ where
     Input: Stream,
     Error: ParserError<Input>,
 {
-    trace("rest", move |input: &mut Input| Ok(input.finish())).parse_next(input)
+    trace(trace_name!("rest"), move |input: &mut Input| {
+        Ok(input.finish())
+    })
+    .parse_next(input)
 }
 
 /// Return the length of the remaining input.
@@ -1086,7 +1090,7 @@ where
     Input: Stream,
     Error: ParserError<Input>,
 {
-    trace("rest_len", move |input: &mut Input| {
+    trace(trace_name!("rest_len"), move |input: &mut Input| {
         let len = input.eof_offset();
         Ok(len)
     })

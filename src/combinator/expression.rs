@@ -5,6 +5,7 @@ use crate::combinator::trace;
 use crate::error::ParserError;
 use crate::stream::Stream;
 use crate::stream::StreamIsPartial;
+use crate::trace_name;
 use crate::Parser;
 use crate::Result;
 
@@ -314,7 +315,7 @@ where
 {
     #[inline(always)]
     fn parse_next(&mut self, input: &mut I) -> Result<O, E> {
-        trace("expression", move |i: &mut I| {
+        trace(trace_name!("expression"), move |i: &mut I| {
             expression_impl(
                 i,
                 &mut self.parse_operand,
@@ -345,13 +346,14 @@ where
     Post: Parser<I, Postfix<I, O, E>, E>,
     E: ParserError<I>,
 {
-    let operand = opt(trace("operand", parse_operand.by_ref())).parse_next(i)?;
+    let operand = opt(trace(trace_name!("operand"), parse_operand.by_ref())).parse_next(i)?;
     let mut operand = if let Some(operand) = operand {
         operand
     } else {
         // Prefix unary operators
         let len = i.eof_offset();
-        let Prefix(power, fold_prefix) = trace("prefix", prefix.by_ref()).parse_next(i)?;
+        let Prefix(power, fold_prefix) =
+            trace(trace_name!("prefix"), prefix.by_ref()).parse_next(i)?;
         // infinite loop check: the parser must always consume
         if i.eof_offset() == len {
             return Err(E::assert(i, "`prefix` parsers must always consume"));
@@ -369,7 +371,7 @@ where
         // Postfix unary operators
         let start = i.checkpoint();
         if let Some(Postfix(power, fold_postfix)) =
-            opt(trace("postfix", postfix.by_ref())).parse_next(i)?
+            opt(trace(trace_name!("postfix"), postfix.by_ref())).parse_next(i)?
         {
             // control precedence over the prefix e.g.:
             // `--(i++)` or `(--i)++`
@@ -384,7 +386,7 @@ where
 
         // Infix binary operators
         let start = i.checkpoint();
-        let parse_result = opt(trace("infix", infix.by_ref())).parse_next(i)?;
+        let parse_result = opt(trace(trace_name!("infix"), infix.by_ref())).parse_next(i)?;
         if let Some(infix_op) = parse_result {
             let mut is_neither = None;
             let (lpower, rpower, fold_infix) = match infix_op {

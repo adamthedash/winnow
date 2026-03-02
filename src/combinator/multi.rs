@@ -6,6 +6,7 @@ use crate::error::ParserError;
 use crate::stream::Accumulate;
 use crate::stream::Range;
 use crate::stream::Stream;
+use crate::trace_name;
 use crate::Parser;
 use crate::Result;
 
@@ -266,7 +267,7 @@ where
             start_inclusive,
             end_inclusive,
         } = self.occurrences;
-        trace("repeat_fold", move |i: &mut Input| {
+        trace(trace_name!("repeat_fold"), move |i: &mut Input| {
             match (start_inclusive, end_inclusive) {
                 (0, None) => fold_repeat0_(&mut self.parser, &mut init, &mut op, i),
                 (1, None) => fold_repeat1_(&mut self.parser, &mut init, &mut op, i),
@@ -349,16 +350,19 @@ where
             start_inclusive,
             end_inclusive,
         } = self.occurrences;
-        trace("repeat_verify_fold", move |input: &mut Input| {
-            verify_fold_m_n(
-                start_inclusive,
-                end_inclusive.unwrap_or(usize::MAX),
-                &mut self.parser,
-                &mut init,
-                &mut op,
-                input,
-            )
-        })
+        trace(
+            trace_name!("repeat_verify_fold"),
+            move |input: &mut Input| {
+                verify_fold_m_n(
+                    start_inclusive,
+                    end_inclusive.unwrap_or(usize::MAX),
+                    &mut self.parser,
+                    &mut init,
+                    &mut op,
+                    input,
+                )
+            },
+        )
     }
 
     /// Akin to [`Repeat::fold`], but for containers that can error when an element is accumulated.
@@ -422,7 +426,7 @@ where
             start_inclusive,
             end_inclusive,
         } = self.occurrences;
-        trace("repeat_try_fold", move |input: &mut Input| {
+        trace(trace_name!("repeat_try_fold"), move |input: &mut Input| {
             try_fold_m_n(
                 start_inclusive,
                 end_inclusive.unwrap_or(usize::MAX),
@@ -448,7 +452,7 @@ where
             start_inclusive,
             end_inclusive,
         } = self.occurrences;
-        trace("repeat", move |i: &mut I| {
+        trace(trace_name!("repeat"), move |i: &mut I| {
             match (start_inclusive, end_inclusive) {
                 (0, None) => fold_repeat0_(
                     &mut self.parser,
@@ -851,7 +855,7 @@ where
         start_inclusive,
         end_inclusive,
     } = occurrences.into();
-    trace("repeat_till", move |i: &mut Input| {
+    trace(trace_name!("repeat_till"), move |i: &mut Input| {
         match (start_inclusive, end_inclusive) {
             (0, None) => repeat_till0_(&mut parse, &mut terminator, i),
             (start, end) => repeat_till_m_n_(
@@ -1084,7 +1088,7 @@ where
         start_inclusive,
         end_inclusive,
     } = occurrences.into();
-    trace("separated", move |input: &mut Input| {
+    trace(trace_name!("separated"), move |input: &mut Input| {
         match (start_inclusive, end_inclusive) {
             (0, None) => separated0_(&mut parser, &mut separator, input),
             (1, None) => separated1_(&mut parser, &mut separator, input),
@@ -1395,7 +1399,7 @@ where
     Error: ParserError<Input>,
     Op: FnMut(Output, Sep, Output) -> Output,
 {
-    trace("separated_foldl1", move |i: &mut Input| {
+    trace(trace_name!("separated_foldl1"), move |i: &mut Input| {
         let mut ol = parser.parse_next(i)?;
 
         loop {
@@ -1467,7 +1471,7 @@ where
     Error: ParserError<Input>,
     Op: FnMut(Output, Sep, Output) -> Output,
 {
-    trace("separated_foldr1", move |i: &mut Input| {
+    trace(trace_name!("separated_foldr1"), move |i: &mut Input| {
         let ol = parser.parse_next(i)?;
         let all: alloc::vec::Vec<(Sep, Output)> =
             repeat(0.., (sep.by_ref(), parser.by_ref())).parse_next(i)?;
@@ -1516,7 +1520,7 @@ where
     ParseNext: Parser<Input, Output, Error> + 'i,
     Error: ParserError<Input> + 'i,
 {
-    trace("fill", move |i: &mut Input| {
+    trace(trace_name!("fill"), move |i: &mut Input| {
         for elem in buf.iter_mut() {
             let start = i.checkpoint();
             match parser.parse_next(i) {

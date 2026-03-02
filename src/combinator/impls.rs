@@ -96,7 +96,7 @@ where
             input.reset(&start);
             E::from_external_error(input, err)
         });
-        trace_result("verify", &res);
+        trace_result("try_map", &res);
         res
     }
 }
@@ -132,7 +132,7 @@ where
             input.reset(&start);
             ParserError::from_input(input)
         });
-        trace_result("verify", &res);
+        trace_result("verify_map", &res);
         res
     }
 }
@@ -203,7 +203,7 @@ where
             i.reset(&start);
             ParserError::from_input(i)
         });
-        trace_result("verify", &res);
+        trace_result("parse_to", &res);
         res
     }
 }
@@ -253,7 +253,7 @@ where
 {
     #[inline]
     fn parse_next(&mut self, input: &mut I) -> Result<O, E> {
-        trace("complete_err", |input: &mut I| {
+        trace(trace_name!("complete_err"), |input: &mut I| {
             match (self.p).parse_next(input) {
                 Err(err) => match err.needed() {
                     Some(_) => Err(ParserError::from_input(input)),
