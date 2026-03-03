@@ -166,7 +166,8 @@ where
     Literal: Clone + core::fmt::Debug,
     Error: ParserError<Input>,
 {
-    trace(DisplayDebug(literal.clone()), move |i: &mut Input| {
+    let name = format!("{}::literal({:?})", module_path!(), literal);
+    trace(name, move |i: &mut Input| {
         let t = literal.clone();
         if <Input as StreamIsPartial>::is_partial_supported() {
             literal_::<_, _, _, true>(i, t)
