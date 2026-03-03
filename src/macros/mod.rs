@@ -1,5 +1,6 @@
 mod dispatch;
 mod seq;
+mod trace;
 mod trace_name;
 
 #[cfg(test)]
