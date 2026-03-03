@@ -1,4 +1,3 @@
-use crate::combinator::trace;
 use crate::error::ParserError;
 use crate::stream::Stream;
 use crate::*;
@@ -38,7 +37,7 @@ where
     IgnoredParser: Parser<Input, Ignored, Error>,
     ParseNext: Parser<Input, Output, Error>,
 {
-    trace(trace_name!("preceded"), move |input: &mut Input| {
+    trace!("preceded", move |input: &mut Input| {
         let _ = ignored.parse_next(input)?;
         parser.parse_next(input)
     })
@@ -76,7 +75,7 @@ where
     ParseNext: Parser<Input, Output, Error>,
     IgnoredParser: Parser<Input, Ignored, Error>,
 {
-    trace(trace_name!("terminated"), move |input: &mut Input| {
+    trace!("terminated", move |input: &mut Input| {
         let o = parser.parse_next(input)?;
         ignored.parse_next(input).map(|_| o)
     })
@@ -115,7 +114,7 @@ where
     SepParser: Parser<Input, Sep, Error>,
     P2: Parser<Input, O2, Error>,
 {
-    trace(trace_name!("separated_pair"), move |input: &mut Input| {
+    trace!("separated_pair", move |input: &mut Input| {
         let o1 = first.parse_next(input)?;
         let _ = sep.parse_next(input)?;
         second.parse_next(input).map(|o2| (o1, o2))
@@ -166,7 +165,7 @@ where
     ParseNext: Parser<Input, Output, Error>,
     IgnoredParser2: Parser<Input, Ignored2, Error>,
 {
-    trace(trace_name!("delimited"), move |input: &mut Input| {
+    trace!("delimited", move |input: &mut Input| {
         let _ = ignored1.parse_next(input)?;
         let o2 = parser.parse_next(input)?;
         ignored2.parse_next(input).map(|_| o2)

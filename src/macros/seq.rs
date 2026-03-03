@@ -74,7 +74,7 @@
 #[doc(hidden)] // forced to be visible in intended location
 macro_rules! seq {
     ($($name: ident)::* { $($fields: tt)* }) => {
-        $crate::combinator::trace(stringify!($($name)::*), move |input: &mut _| {
+        $crate::combinator::trace(concat!("winnow::macros::seq::", stringify!($($name)::*)), move |input: &mut _| {
             $crate::seq_parse_struct_fields!(
                 ( $($fields)* );
                 ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
@@ -86,22 +86,8 @@ macro_rules! seq {
             ))
         })
     };
-    ($($name: ident)::* ( $($fields: tt)* )) => {
-        $crate::combinator::trace(stringify!($($name)::*), move |input: &mut _| {
-            $crate::seq_parse_tuple_fields!(
-                ( $($fields)* );
-                ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
-                input;
-            );
-            Ok($crate::seq_init_tuple_fields!(
-                ( $($fields)* );
-                ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
-                $($name)::*;
-            ))
-        })
-    };
     (( $($fields: tt)* )) => {
-        $crate::combinator::trace($crate::trace_name!("tuple"), move |input: &mut _| {
+        $crate::combinator::trace("winnow::macros::seq::tuple", move |input: &mut _| {
             $crate::seq_parse_tuple_fields!(
                 ( $($fields)* );
                 ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
@@ -111,6 +97,20 @@ macro_rules! seq {
                 ( $($fields)* );
                 ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
                 ;
+            ))
+        })
+    };
+    ($($name: ident)::* ( $($fields: tt)* )) => {
+        $crate::combinator::trace(concat!("winnow::macros::seq::", stringify!($($name)::*)), move |input: &mut _| {
+            $crate::seq_parse_tuple_fields!(
+                ( $($fields)* );
+                ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
+                input;
+            );
+            Ok($crate::seq_init_tuple_fields!(
+                ( $($fields)* );
+                ( _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17, _18, _19, _20 );
+                $($name)::*;
             ))
         })
     };

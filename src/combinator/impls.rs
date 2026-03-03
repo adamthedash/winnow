@@ -253,7 +253,7 @@ where
 {
     #[inline]
     fn parse_next(&mut self, input: &mut I) -> Result<O, E> {
-        trace(trace_name!("complete_err"), |input: &mut I| {
+        trace!("complete_err", |input: &mut I| {
             match (self.p).parse_next(input) {
                 Err(err) => match err.needed() {
                     Some(_) => Err(ParserError::from_input(input)),

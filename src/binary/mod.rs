@@ -8,13 +8,12 @@ pub mod bits;
 mod tests;
 
 use crate::combinator::repeat;
-use crate::combinator::trace;
 use crate::error::Needed;
 use crate::error::ParserError;
 use crate::stream::Accumulate;
 use crate::stream::{Stream, StreamIsPartial};
 use crate::stream::{ToUsize, UpdateSlice};
-use crate::trace_name;
+use crate::trace;
 use crate::Parser;
 use crate::Result;
 use core::ops::{Add, Shl};
@@ -115,10 +114,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_u16"), move |input: &mut Input| {
-        be_uint(input, 2)
-    })
-    .parse_next(input)
+    trace!("be_u16", move |input: &mut Input| { be_uint(input, 2) }).parse_next(input)
 }
 
 /// Recognizes a big endian unsigned 3 byte integer.
@@ -162,10 +158,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_u24"), move |input: &mut Input| {
-        be_uint(input, 3)
-    })
-    .parse_next(input)
+    trace!("be_u24", move |input: &mut Input| { be_uint(input, 3) }).parse_next(input)
 }
 
 /// Recognizes a big endian unsigned 4 bytes integer.
@@ -209,10 +202,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_u32"), move |input: &mut Input| {
-        be_uint(input, 4)
-    })
-    .parse_next(input)
+    trace!("be_u32", move |input: &mut Input| { be_uint(input, 4) }).parse_next(input)
 }
 
 /// Recognizes a big endian unsigned 8 bytes integer.
@@ -256,10 +246,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_u64"), move |input: &mut Input| {
-        be_uint(input, 8)
-    })
-    .parse_next(input)
+    trace!("be_u64", move |input: &mut Input| { be_uint(input, 8) }).parse_next(input)
 }
 
 /// Recognizes a big endian unsigned 16 bytes integer.
@@ -303,10 +290,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_u128"), move |input: &mut Input| {
-        be_uint(input, 16)
-    })
-    .parse_next(input)
+    trace!("be_u128", move |input: &mut Input| { be_uint(input, 16) }).parse_next(input)
 }
 
 #[inline]
@@ -432,7 +416,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_i16"), move |input: &mut Input| {
+    trace!("be_i16", move |input: &mut Input| {
         be_uint::<_, u16, _>(input, 2).map(|n| n as i16)
     })
     .parse_next(input)
@@ -479,7 +463,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_i24"), move |input: &mut Input| {
+    trace!("be_i24", move |input: &mut Input| {
         be_uint::<_, u32, _>(input, 3).map(|n| {
             // Same as the unsigned version but we need to sign-extend manually here
             let n = if n & 0x80_00_00 != 0 {
@@ -534,7 +518,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_i32"), move |input: &mut Input| {
+    trace!("be_i32", move |input: &mut Input| {
         be_uint::<_, u32, _>(input, 4).map(|n| n as i32)
     })
     .parse_next(input)
@@ -581,7 +565,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_i64"), move |input: &mut Input| {
+    trace!("be_i64", move |input: &mut Input| {
         be_uint::<_, u64, _>(input, 8).map(|n| n as i64)
     })
     .parse_next(input)
@@ -628,7 +612,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_i128"), move |input: &mut Input| {
+    trace!("be_i128", move |input: &mut Input| {
         be_uint::<_, u128, _>(input, 16).map(|n| n as i128)
     })
     .parse_next(input)
@@ -719,10 +703,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_u16"), move |input: &mut Input| {
-        le_uint(input, 2)
-    })
-    .parse_next(input)
+    trace!("le_u16", move |input: &mut Input| { le_uint(input, 2) }).parse_next(input)
 }
 
 /// Recognizes a little endian unsigned 3 byte integer.
@@ -766,10 +747,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_u24"), move |input: &mut Input| {
-        le_uint(input, 3)
-    })
-    .parse_next(input)
+    trace!("le_u24", move |input: &mut Input| { le_uint(input, 3) }).parse_next(input)
 }
 
 /// Recognizes a little endian unsigned 4 bytes integer.
@@ -813,10 +791,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_u32"), move |input: &mut Input| {
-        le_uint(input, 4)
-    })
-    .parse_next(input)
+    trace!("le_u32", move |input: &mut Input| { le_uint(input, 4) }).parse_next(input)
 }
 
 /// Recognizes a little endian unsigned 8 bytes integer.
@@ -860,10 +835,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_u64"), move |input: &mut Input| {
-        le_uint(input, 8)
-    })
-    .parse_next(input)
+    trace!("le_u64", move |input: &mut Input| { le_uint(input, 8) }).parse_next(input)
 }
 
 /// Recognizes a little endian unsigned 16 bytes integer.
@@ -907,10 +879,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_u128"), move |input: &mut Input| {
-        le_uint(input, 16)
-    })
-    .parse_next(input)
+    trace!("le_u128", move |input: &mut Input| { le_uint(input, 16) }).parse_next(input)
 }
 
 #[inline]
@@ -1035,7 +1004,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_i16"), move |input: &mut Input| {
+    trace!("le_i16", move |input: &mut Input| {
         le_uint::<_, u16, _>(input, 2).map(|n| n as i16)
     })
     .parse_next(input)
@@ -1082,7 +1051,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_i24"), move |input: &mut Input| {
+    trace!("le_i24", move |input: &mut Input| {
         le_uint::<_, u32, _>(input, 3).map(|n| {
             // Same as the unsigned version but we need to sign-extend manually here
             let n = if n & 0x80_00_00 != 0 {
@@ -1137,7 +1106,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_i32"), move |input: &mut Input| {
+    trace!("le_i32", move |input: &mut Input| {
         le_uint::<_, u32, _>(input, 4).map(|n| n as i32)
     })
     .parse_next(input)
@@ -1184,7 +1153,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_i64"), move |input: &mut Input| {
+    trace!("le_i64", move |input: &mut Input| {
         le_uint::<_, u64, _>(input, 8).map(|n| n as i64)
     })
     .parse_next(input)
@@ -1231,7 +1200,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_i128"), move |input: &mut Input| {
+    trace!("le_i128", move |input: &mut Input| {
         le_uint::<_, u128, _>(input, 16).map(|n| n as i128)
     })
     .parse_next(input)
@@ -1285,7 +1254,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("u8"), move |input: &mut Input| {
+    trace!("u8", move |input: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() {
             u8_::<_, _, true>(input)
         } else {
@@ -1712,7 +1681,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("i8"), move |input: &mut Input| {
+    trace!("i8", move |input: &mut Input| {
         if <Input as StreamIsPartial>::is_partial_supported() {
             u8_::<_, _, true>(input)
         } else {
@@ -2120,7 +2089,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_f32"), move |input: &mut Input| {
+    trace!("be_f32", move |input: &mut Input| {
         be_uint::<_, u32, _>(input, 4).map(f32::from_bits)
     })
     .parse_next(input)
@@ -2167,7 +2136,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("be_f64"), move |input: &mut Input| {
+    trace!("be_f64", move |input: &mut Input| {
         be_uint::<_, u64, _>(input, 8).map(f64::from_bits)
     })
     .parse_next(input)
@@ -2214,7 +2183,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_f32"), move |input: &mut Input| {
+    trace!("le_f32", move |input: &mut Input| {
         le_uint::<_, u32, _>(input, 4).map(f32::from_bits)
     })
     .parse_next(input)
@@ -2261,7 +2230,7 @@ where
     Input: StreamIsPartial + Stream<Token = u8>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("le_f64"), move |input: &mut Input| {
+    trace!("le_f64", move |input: &mut Input| {
         le_uint::<_, u64, _>(input, 8).map(f64::from_bits)
     })
     .parse_next(input)
@@ -2450,7 +2419,7 @@ where
     CountParser: Parser<Input, Count, Error>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("length_take"), move |i: &mut Input| {
+    trace!("length_take", move |i: &mut Input| {
         let length = count.parse_next(i)?;
 
         crate::token::take(length).parse_next(i)
@@ -2503,7 +2472,7 @@ where
     ParseNext: Parser<Input, Output, Error>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("length_and_then"), move |i: &mut Input| {
+    trace!("length_and_then", move |i: &mut Input| {
         let data = length_take(count.by_ref()).parse_next(i)?;
         let mut data = Input::update_slice(i.clone(), data);
         let _ = data.complete();
@@ -2556,7 +2525,7 @@ where
     ParseNext: Parser<Input, Output, Error>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("length_repeat"), move |i: &mut Input| {
+    trace!("length_repeat", move |i: &mut Input| {
         let n = count.parse_next(i)?;
         let n = n.to_usize();
         repeat(n, parser.by_ref()).parse_next(i)

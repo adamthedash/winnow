@@ -1,6 +1,6 @@
-use crate::combinator::trace;
 use crate::error::{ModalError, ParserError};
 use crate::stream::Stream;
+use crate::trace;
 use crate::*;
 
 /// Apply a [`Parser`], producing `None` on [`ErrMode::Backtrack`][crate::error::ErrMode::Backtrack].
@@ -30,7 +30,7 @@ where
     ParseNext: Parser<Input, Output, Error>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("opt"), move |input: &mut Input| {
+    trace!("opt", move |input: &mut Input| {
         let start = input.checkpoint();
         match parser.parse_next(input) {
             Ok(o) => Ok(Some(o)),
@@ -75,7 +75,7 @@ where
     ParseNext: Parser<Input, Output, Error>,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("cond"), move |input: &mut Input| {
+    trace!("cond", move |input: &mut Input| {
         if cond {
             parser.parse_next(input).map(Some)
         } else {
@@ -114,7 +114,7 @@ where
     Error: ParserError<Input>,
     ParseNext: Parser<Input, Output, Error>,
 {
-    trace(trace_name!("peek"), move |input: &mut Input| {
+    trace!("peek", move |input: &mut Input| {
         let start = input.checkpoint();
         let res = parser.parse_next(input);
         input.reset(&start);
@@ -157,7 +157,7 @@ where
     Input: Stream,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("eof"), move |input: &mut Input| {
+    trace!("eof", move |input: &mut Input| {
         if input.eof_offset() == 0 {
             Ok(input.next_slice(0))
         } else {
@@ -197,7 +197,7 @@ where
     Error: ParserError<Input>,
     ParseNext: Parser<Input, Output, Error>,
 {
-    trace(trace_name!("not"), move |input: &mut Input| {
+    trace!("not", move |input: &mut Input| {
         let start = input.checkpoint();
         let res = parser.parse_next(input);
         input.reset(&start);
@@ -273,7 +273,7 @@ where
     Error: ParserError<Input> + ModalError,
     ParseNext: Parser<Input, Output, Error>,
 {
-    trace(trace_name!("cut_err"), move |input: &mut Input| {
+    trace!("cut_err", move |input: &mut Input| {
         parser.parse_next(input).map_err(|e| e.cut())
     })
 }
@@ -290,7 +290,7 @@ where
     Error: ParserError<Input> + ModalError,
     ParseNext: Parser<Input, Output, Error>,
 {
-    trace(trace_name!("backtrack_err"), move |input: &mut Input| {
+    trace!("backtrack_err", move |input: &mut Input| {
         parser.parse_next(input).map_err(|e| e.backtrack())
     })
 }
@@ -320,7 +320,7 @@ where
     Error: ParserError<Input>,
 {
     #![allow(clippy::todo)]
-    trace(trace_name!("todo"), move |_input: &mut Input| {
+    trace!("todo", move |_input: &mut Input| {
         todo!("unimplemented parse")
     })
     .parse_next(input)
@@ -502,8 +502,5 @@ where
     Input: Stream,
     Error: ParserError<Input>,
 {
-    trace(trace_name!("fail"), |i: &mut Input| {
-        Err(ParserError::from_input(i))
-    })
-    .parse_next(i)
+    trace!("fail", |i: &mut Input| { Err(ParserError::from_input(i)) }).parse_next(i)
 }
