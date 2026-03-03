@@ -123,7 +123,7 @@ pre-release-replacements = [
 
 [features]
 # default = ["std"]
-default = ["std", "debug"]
+default = ["std"]
 alloc = []
 std = ["alloc", "memchr?/std"]
 simd = ["dep:memchr"]
