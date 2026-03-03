@@ -4,7 +4,6 @@
 mod tests;
 
 use crate::combinator::trace;
-use crate::combinator::DisplayDebug;
 use crate::error::Needed;
 use crate::error::ParserError;
 use crate::stream::Range;

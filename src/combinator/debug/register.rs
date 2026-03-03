@@ -22,6 +22,7 @@ lazy_static! {
 enum Filter {
     All,
     Id(String),
+    Children(String),
 }
 
 impl Filter {
@@ -29,10 +30,21 @@ impl Filter {
     /// Identifier should be a fully qualified path to the parser.
     /// Eg `winnow::combinators::preceded`
     fn enabled(&self, identifier: &str) -> bool {
+        use Filter::{All, Children, Id};
         match self {
-            Filter::All => true,
+            All => true,
             // TODO: Structured path?
-            Filter::Id(id) => identifier.starts_with(id),
+            Id(id) | Children(id) => identifier.starts_with(id),
+        }
+    }
+
+    /// Whether we should show child parsers for the given identifier
+    fn show_children(&self, identifier: &str) -> bool {
+        use Filter::{All, Children, Id};
+        match self {
+            All | Id(_) => false,
+            // TODO: Structured path?
+            Children(id) => identifier.starts_with(id),
         }
     }
 
@@ -41,12 +53,16 @@ impl Filter {
         env.split(',')
             .map(|part| part.trim())
             .filter(|part| !part.is_empty())
-            .map(|part| {
-                if part == "all" {
-                    Filter::All
-                } else {
-                    Filter::Id(part.to_owned())
+            .map(|part| match part.split_once("=") {
+                None => {
+                    if part == "all" {
+                        Filter::All
+                    } else {
+                        Filter::Id(part.to_owned())
+                    }
                 }
+                Some((id, "children")) => Filter::Children(id.to_owned()),
+                Some((_, flag)) => panic!("Invalid filter flag: {flag:?}"),
             })
             .collect()
     }
@@ -67,6 +83,37 @@ impl Filters {
     pub(crate) fn enabled(&self, identifier: impl Display) -> bool {
         let identifier = format!("{identifier}");
         self.0.iter().any(|f| f.enabled(&identifier))
+    }
+
+    pub(crate) fn show_children(&self, identifier: impl Display) -> bool {
+        let identifier = format!("{identifier}");
+        self.0.iter().any(|f| f.show_children(&identifier))
+    }
+}
+
+/// When a filter has show children enabled, this tracks the current stack of children in case
+/// there are nested ones
+static CHILDREN: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
+
+pub(crate) struct ShowChildren(());
+
+impl ShowChildren {
+    /// Increment the children stack and grab a drop guard
+    pub(crate) fn new() -> Self {
+        // TODO: Might not need atomic if we're not actually using the value?
+        CHILDREN.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        Self(())
+    }
+
+    /// Check if we're currently showing children
+    pub(crate) fn enabled() -> bool {
+        CHILDREN.load(std::sync::atomic::Ordering::SeqCst) > 0
+    }
+}
+
+impl Drop for ShowChildren {
+    fn drop(&mut self) {
+        CHILDREN.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
     }
 }
 
@@ -141,6 +188,18 @@ mod tests {
     }
 
     #[test]
+    fn test_env_filters_children() {
+        let env_str = "winnow::combinators::preceded=children";
+
+        let filters = Filter::parse_env(env_str);
+
+        assert_eq!(
+            filters,
+            [Filter::Children("winnow::combinators::preceded".to_owned())]
+        );
+    }
+
+    #[test]
     fn test_filters_all() {
         let filter = Filters(vec![Filter::All]);
 
@@ -174,5 +233,20 @@ mod tests {
         assert!(!filter.enabled("winnow::mutli::repeat"));
         assert!(!filter.enabled("winnow::binary::be_u16"));
         assert!(!filter.enabled("other_crate::parser"));
+    }
+
+    #[test]
+    fn test_children() {
+        assert_eq!(CHILDREN.load(std::sync::atomic::Ordering::SeqCst), 0);
+        {
+            let _guard = ShowChildren::new();
+            assert_eq!(CHILDREN.load(std::sync::atomic::Ordering::SeqCst), 1);
+            {
+                let _guard = ShowChildren::new();
+                assert_eq!(CHILDREN.load(std::sync::atomic::Ordering::SeqCst), 2);
+            }
+            assert_eq!(CHILDREN.load(std::sync::atomic::Ordering::SeqCst), 1);
+        }
+        assert_eq!(CHILDREN.load(std::sync::atomic::Ordering::SeqCst), 0);
     }
 }

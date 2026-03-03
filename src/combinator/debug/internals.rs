@@ -3,6 +3,7 @@
 use std::io::Write;
 
 use super::register::FILTERS;
+use crate::combinator::debug::register::ShowChildren;
 use crate::error::ParserError;
 use crate::stream::Stream;
 use crate::*;
@@ -53,7 +54,7 @@ where
     fn parse_next(&mut self, i: &mut I) -> Result<O, E> {
         let enabled = FILTERS.enabled(&self.name);
 
-        if enabled {
+        let mut show = || {
             let depth = Depth::new();
             let original = i.checkpoint();
             start(*depth, &self.name, self.call_count, i);
@@ -66,6 +67,16 @@ where
             self.call_count += 1;
 
             res
+        };
+
+        if enabled || ShowChildren::enabled() {
+            if FILTERS.show_children(&self.name) {
+                let _guard = ShowChildren::new();
+
+                show()
+            } else {
+                show()
+            }
         } else {
             self.parser.parse_next(i)
         }

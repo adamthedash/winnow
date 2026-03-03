@@ -157,11 +157,6 @@ debug = true
 lto = true
 codegen-units = 1
 
-
-[[example]]
-name = "big_input"
-required-features = ["debug", "std"]
-
 [[example]]
 name = "arithmetic"
 test = true
