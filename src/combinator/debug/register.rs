@@ -9,7 +9,6 @@
 //! parsers called by it)
 //! `WINNOW_LOG=winnow,poe_data_tools::file_parsers` (multiple filters)
 //!
-//!
 
 use lazy_static::lazy_static;
 use std::fmt::Display;

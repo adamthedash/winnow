@@ -3,12 +3,12 @@
 #[cfg(feature = "debug")]
 mod internals;
 
+#[cfg(feature = "debug")]
 mod register;
 
 use crate::error::ParserError;
 use crate::stream::Stream;
 use crate::Parser;
-use register::FILTERS;
 
 /// Trace the execution of the parser
 ///
@@ -60,7 +60,7 @@ pub(crate) fn trace_result<T, I: Stream, E: ParserError<I>>(
     res: &Result<T, E>,
 ) {
     #[cfg(feature = "debug")]
-    if FILTERS.enabled(&name) {
+    if register::FILTERS.enabled(&name) {
         let depth = internals::Depth::existing();
         let severity = internals::Severity::with_result(res);
         internals::result(*depth, &name, severity);
