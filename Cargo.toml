@@ -95,8 +95,8 @@ lto = true
 # debug = "line-tables-only"  # requires Cargo 1.71
 
 [package]
-name = "winnow"
-version = "0.7.14"
+name = "adamthedash_winnow"
+version = "1.0.0"
 description = "A byte-oriented, zero-copy, parser combinators library"
 categories = ["parsing"]
 keywords = ["parser", "parser-combinators", "parsing", "streaming", "bit"]
@@ -122,7 +122,6 @@ pre-release-replacements = [
 ]
 
 [features]
-# default = ["std"]
 default = ["std"]
 alloc = []
 std = ["alloc", "memchr?/std"]

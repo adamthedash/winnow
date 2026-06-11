@@ -1,6 +1,6 @@
 # winnow, making parsing a breeze
 
-NOTE: This is a fork of [winnow](https://github.com/winnow-rs/winnow) with the following changes:  
+NOTE: This is a fork of [winnow](https://github.com/winnow-rs/winnow) `v0.7.14` with the following changes:  
 - Optimised debug rendering with large input streams. Github issue [here](https://github.com/winnow-rs/winnow/issues/871)
 - [env_logger](https://github.com/rust-cli/env_logger)-like parser trace filtering. `WINNOW_TRACE=crate::module::function(=children)`
 - `trace!` and `trace_name!` macros to automatically create fully qualified parser names when using the `trace` combinator
