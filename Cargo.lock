@@ -3,6 +3,28 @@
 version = 3
 
 [[package]]
+name = "adamthedash_winnow"
+version = "1.0.0"
+dependencies = [
+ "annotate-snippets",
+ "anstream",
+ "anstyle",
+ "anyhow",
+ "automod",
+ "circular",
+ "criterion",
+ "is_terminal_polyfill",
+ "lazy_static",
+ "lexopt",
+ "memchr",
+ "proptest",
+ "rustc-hash",
+ "snapbox",
+ "term-transcript",
+ "terminal_size",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1432,33 +1454,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "271414315aff87387382ec3d271b52d7ae78726f5d44ac98b4f4030c91880486"
 
 [[package]]
-name = "winnow"
-version = "1.0.0"
-dependencies = [
- "annotate-snippets",
- "anstream",
- "anstyle",
- "anyhow",
- "automod",
- "circular",
- "criterion",
- "is_terminal_polyfill",
- "lazy_static",
- "lexopt",
- "memchr",
- "proptest",
- "rustc-hash",
- "snapbox",
- "term-transcript",
- "terminal_size",
-]
-
-[[package]]
 name = "winnow-fuzz"
 version = "0.0.0"
 dependencies = [
+ "adamthedash_winnow",
  "libfuzzer-sys",
- "winnow",
 ]
 
 [[package]]

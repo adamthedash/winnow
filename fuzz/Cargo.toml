@@ -14,9 +14,7 @@ release = false
 
 [dependencies]
 libfuzzer-sys = "0.4.10"
-
-[dependencies.winnow]
-path = ".."
+winnow = { package = "adamthedash_winnow", path = ".." }
 
 [[bin]]
 name = "fuzz_arithmetic"
