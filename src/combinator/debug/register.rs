@@ -1,13 +1,13 @@
 //!
 //! These only have an effect when compiling with debug feature
-//! `WINNOW_LOG=all`      (default)
-//! `WINNOW_LOG=poe_data_tools` (enable for a crate)
-//! `WINNOW_LOG=winnow`
-//! `WINNOW_LOG=`            (disable all logging)
-//! `WINNOW_LOG=poe_data_tools::file_parsers::ao` (enable for a module)
-//! `WINNOW_LOG=poe_data_tools::file_parsers::ao=children` (enable for a parser and all child
+//! `WINNOW_TRACE=all`      (default)
+//! `WINNOW_TRACE=poe_data_tools` (enable for a crate)
+//! `WINNOW_TRACE=winnow`
+//! `WINNOW_TRACE=`            (disable all logging)
+//! `WINNOW_TRACE=poe_data_tools::file_parsers::ao` (enable for a module)
+//! `WINNOW_TRACE=poe_data_tools::file_parsers::ao=children` (enable for a parser and all child
 //! parsers called by it)
-//! `WINNOW_LOG=winnow,poe_data_tools::file_parsers` (multiple filters)
+//! `WINNOW_TRACE=winnow,poe_data_tools::file_parsers` (multiple filters)
 //!
 
 use lazy_static::lazy_static;
